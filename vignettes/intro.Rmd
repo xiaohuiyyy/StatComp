@@ -15,7 +15,7 @@ __StatComp20082__ is a simple R package contained several functions as my final 
 
 One is to generate the standard Laplace distribution, called _MCgnr_.
 
-The other is to estimate the parameters for Gaussian Mixtures with 2 components using EM algorithm, called _myEM_. Besides, a function _mydis_ to measure the distance between two models is proposed as well.
+The other is to estimate the parameters for Gaussian Mixtures with 2 components using EM algorithm, called _myEM_. 
 
 ## _MCgnr_ 
 

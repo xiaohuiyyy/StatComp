@@ -14,7 +14,6 @@
 #' @examples
 #' \dontrun{
 #' data(faithful)
-#' n <- nrow(faithful)
 #'mu0 <- list(c(2,60), c(4.5,80))
 #'s0 <- list(matrix(c(1,0,0,1),nrow=2), matrix(c(1,0,0,1),nrow=2))
 #'M0 <- list(data=faithful, lambda=c(0.5, 0.5), mu=mu0, sigma=s0)
