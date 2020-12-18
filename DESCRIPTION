@@ -1,0 +1,16 @@
+Package: StatComp20082
+Type: Package
+Title: Final project for 'Statistical Computing' course
+Version: 1.0
+Date: 2020-12-18
+Author: Xiaohui Yin
+Maintainer: Xiaohui Yin <xiaohuiyyy@gmail.com>
+Description: Several R functions are included in this package for illustration.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.5), mvtnorm, MASS, boot, bootstrap, microbenchmark
+RoxygenNote: 7.1.1
+Encoding: UTF-8
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+URL: http://github.com/xiaohuiyyy/statcomp
+BugReports: http://github.com/xiaohuiyyy/statcomp/issues

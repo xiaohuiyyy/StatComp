@@ -1,0 +1,87 @@
+---
+title: "functions introduction"
+author: "Xiaohui Yin"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to some functions in StatComp20082}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Overview
+
+__StatComp20082__ is a simple R package contained several functions as my final work for 'Statistical Computing' course. 
+
+One is to generate the standard Laplace distribution, called _MCgnr_.
+
+The other is to estimate the parameters for Gaussian Mixtures with 2 components using EM algorithm, called _myEM_. Besides, a function _mydis_ to measure the distance between two models is proposed as well.
+
+## _MCgnr_ 
+
+The source R code for _MCgnr_ is as follows:
+
+```{r,eval=TRUE}
+MCgnr <- function(m, x0, sd){
+  f <- function(x){ exp(-abs(x)) }
+  x <- numeric(m)
+  x[1] <- x0
+  k <- 0
+  u <- runif(m)
+  for (i in 2:m) {
+    xt <- x[i-1]
+    y <- rnorm(1, mean=xt, sd=sd)
+    if (u[i] <= f(y)/f(xt)) x[i] <- y else {
+      x[i] <- xt
+      k <- k+1 #y is rejected
+    }
+  }
+  x
+}
+```
+
+It creates a chain in standard Laplace distribution.
+
+## _myEM_ 
+
+The source R code for _MyEM_ is as follows:
+
+```{r,eval=TRUE}
+myEM <- function(M){
+  M0 <- M
+  x <- M0$data
+  n <- nrow(x)
+  lambda0 <- M0$lambda
+  mu0 <- M0$mu
+  s0 <- M0$sigma
+  k <- length(lambda0)
+  ## E-step: calculate the weight matrix given priori and samples
+  W <- matrix(nrow=n,ncol=k)
+  for(i in 1:n){
+    for(j in 1:k){
+      W[i,j] = mvtnorm::dmvnorm(x[i,], mu0[[j]], s0[[j]])
+    }
+    W[i,] <- W[i,]/sum(W[i,])
+  }
+  ## M-step: update the parameters
+  x <- as.matrix(x)
+  lambda <- apply(W, 2, mean)
+  mu <- mu0; s<- s0
+  for(j in 1:k){
+    mu[[j]] <- as.vector( t(x)%*%W[,j]/sum(W[,j]) )
+    xc <- as.matrix(x)-matrix(rep(mu[[j]],n),byrow=TRUE,nrow=n)
+    s[[j]] <- t(xc)%*%diag(W[,j])%*%xc/sum(W[,j])
+  }
+  M <- list(data=M0$data, lambda=lambda, mu=mu, sigma=s)
+  dis1 <- dis2 <- numeric(length(M$lambda))
+  for (i in 1:length(M$lambda)){
+    dis1[i] <- sum( (M$mu[[i]]-M0$mu[[i]])^2 )
+    dis2[i] <- sum( (M$sigma[[i]]-M0$sigma[[i]])^2 )
+  }
+  dis <- sum( (M$lambda-M0$lambda)^2 )+ sum(dis1) + sum(dis2)
+  if(dis<1e-8) return(M) # set convergence criterion 1e-8 under mydistance
+  else myEM(M)
+}
+```
+
+In E-step, we compute the “membership weight” of data points, and in M-step, we use the membership weights and the data to calculate new parameter values. We continue iterating the process and updating the parameters, until the model converges, saying the distance smaller than some threshold.
